@@ -2,6 +2,7 @@
 
 import { TeamData } from '@/models/TeamData';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
+import { useChat } from '@ai-sdk/react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -12,18 +13,15 @@ import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
 
-type Message = {
-  text: string;
-  isBot: boolean;
-};
-
 const formSchema = z.object({
   message: z.string().min(1, { message: 'Mensagem é obrigatória' }),
 })
 
 export function ChatBot() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+  });
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([{ text: 'Olá, eu sou o FURIA Chatbot. Como posso ajudar você hoje?', isBot: true }]);
   const [escolha, setEscolha] = useState<string>('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -34,18 +32,18 @@ export function ChatBot() {
     },
   })
 
-  function handleSubmit(values: z.infer<typeof formSchema>): void {
-    const userMessage = values.message;
-    if (escolha == '') {
-      setMessages([...messages, { text: userMessage, isBot: false }]);
-      form.reset();
-    } else {
-      setEscolha('');
-      setMessages([{ text: userMessage, isBot: false }]);
-      form.reset();
-    }
+  // function handleSubmit(values: z.infer<typeof formSchema>): void {
+  //   const userMessage = values.message;
+  //   if (escolha == '') {
+  //     setMessages([...messages, { text: userMessage, isBot: false }]);
+  //     form.reset();
+  //   } else {
+  //     setEscolha('');
+  //     setMessages([{ text: userMessage, isBot: false }]);
+  //     form.reset();
+  //   }
 
-  }
+  // }
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -76,40 +74,40 @@ export function ChatBot() {
         <div className="mt-4 bg-gray-900 rounded-lg shadow-xl w-108 overflow-hidden">
           <div className="h-96 overflow-y-auto p-4 space-y-3 scroll-smooth">
             {escolha == '' ? (
-              messages.map((msg, i) => (
+              messages.map((msg) => (
                 <div
-                  key={i}
-                  className={`p-3 rounded-lg ${msg.isBot ? 'bg-gray-800 mr-8' : 'bg-amber-400 text-black ml-8'
+                  key={msg.id}
+                  className={`p-3 rounded-lg ${msg.role === 'assistant' ? 'bg-gray-800 mr-8' : 'bg-amber-400 text-black ml-8'
                     }`}
                 >
                   <div className="flex items-center gap-2">
                     <Avatar>
                       <AvatarFallback>RD</AvatarFallback>
-                      {msg.isBot ? (<AvatarImage src="https://cdn.dribbble.com/userupload/11627402/file/original-519eba43b5e06c4036ad54fe2b6e496f.png" />) : (
+                      {msg.role === 'assistant' ? (<AvatarImage src="https://cdn.dribbble.com/userupload/11627402/file/original-519eba43b5e06c4036ad54fe2b6e496f.png" />) : (
                         <AvatarImage src="" />)}
                     </Avatar>
-                    <p className="text-sm break-all">{msg.text}</p>
+                    <p className="text-sm break-all">{msg.content}</p>
                   </div>
                 </div>
               ))
             ) : (
               <div>
 
-                <Chat escolha={escolha} handleChat={() => { setEscolha(''); setMessages([{ text: 'Olá, eu sou o FURIA Chatbot. Como posso ajudar você hoje?', isBot: true }]) }} />
+                <Chat escolha={escolha} handleChat={() => { setEscolha('');}} />
               </div>
             )}
             <div ref={bottomRef} className="scroll-smooth" />
           </div>
 
           <Form {...form}>
-            <form className='flex gap-2 p-4 border-t border-gray-700' onSubmit={form.handleSubmit(handleSubmit)}>
+            <form className='flex gap-2 p-4 border-t border-gray-700' onSubmit={handleSubmit}>
               <FormField
                 control={form.control}
                 name="message"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='w-full'>
                     <FormControl>
-                      <Input {...field} placeholder="Pergunte o que quiser sobre a FURIA" />
+                      <Input {...field} placeholder="Pergunte o que quiser sobre a FURIA" value={input} onChange={handleInputChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
