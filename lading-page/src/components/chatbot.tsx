@@ -4,8 +4,12 @@ import { TeamData } from '@/models/TeamData';
 import { smoothScrollToElement } from '@/utils/smoothScroll';
 import { useChat } from '@ai-sdk/react';
 import { zodResolver } from "@hookform/resolvers/zod";
+import 'highlight.js/styles/vs2015.css';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from "react-hook-form";
+import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+import remarkGfm from 'remark-gfm';
 import { z } from "zod";
 import { Chat } from './chat';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -18,9 +22,21 @@ const formSchema = z.object({
 })
 
 export function ChatBot() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const { messages, setMessages, input, handleInputChange, handleSubmit } = useChat({
     api: '/api/chat',
+    sendExtraMessageFields: false,
   });
+
+  const clearChat = () => {
+    setMessages([
+      {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'O que você gostaria de saber sobre a fúria?'
+      }
+    ]);
+  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [escolha, setEscolha] = useState<string>('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -32,18 +48,13 @@ export function ChatBot() {
     },
   })
 
-  // function handleSubmit(values: z.infer<typeof formSchema>): void {
-  //   const userMessage = values.message;
-  //   if (escolha == '') {
-  //     setMessages([...messages, { text: userMessage, isBot: false }]);
-  //     form.reset();
-  //   } else {
-  //     setEscolha('');
-  //     setMessages([{ text: userMessage, isBot: false }]);
-  //     form.reset();
-  //   }
+  function handleClick(): void {
+    if (escolha != '') {
+      setEscolha('');
+      clearChat();
+    }
 
-  // }
+  }
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -63,6 +74,7 @@ export function ChatBot() {
         onClick={() => {
           setIsOpen(!isOpen);
           setEscolha('');
+          clearChat();
         }}
         className="bg-amber-400 text-black rounded-full p-4 shadow-lg hover:bg-amber-500 transition-all"
       >
@@ -80,13 +92,20 @@ export function ChatBot() {
                   className={`p-3 rounded-lg ${msg.role === 'assistant' ? 'bg-gray-800 mr-8' : 'bg-amber-400 text-black ml-8'
                     }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex  gap-2">
                     <Avatar>
                       <AvatarFallback>RD</AvatarFallback>
                       {msg.role === 'assistant' ? (<AvatarImage src="https://cdn.dribbble.com/userupload/11627402/file/original-519eba43b5e06c4036ad54fe2b6e496f.png" />) : (
                         <AvatarImage src="" />)}
                     </Avatar>
-                    <p className="text-sm break-all">{msg.content}</p>
+                      <div className="prose dark:prose-invert prose-sm text-sm break-all">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeHighlight]}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
                   </div>
                 </div>
               ))
@@ -107,7 +126,7 @@ export function ChatBot() {
                 render={({ field }) => (
                   <FormItem className='w-full'>
                     <FormControl>
-                      <Input {...field} placeholder="Pergunte o que quiser sobre a FURIA" value={input} onChange={handleInputChange} />
+                      <Input {...field} placeholder="Pergunte o que quiser sobre a FURIA" value={input} onChange={handleInputChange} onClick={handleClick}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
