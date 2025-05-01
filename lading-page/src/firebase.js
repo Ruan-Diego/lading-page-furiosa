@@ -1,8 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-//import { getAnalytics } from "firebase/analytics";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCe-aGYk-F6pxa21Rzl7DLBQSPQE_eVm5U",
   authDomain: "furiosa-chat.firebaseapp.com",

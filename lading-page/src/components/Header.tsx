@@ -1,6 +1,9 @@
 import furiaLogo from '@/assets/furia-logo.png';
 import Image from "next/image";
 
+import { auth } from "@/firebase";
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -10,9 +13,19 @@ import {
 } from "./ui/navigation-menu";
 
 export default function Header() {
+  const router = useRouter();
+  async function logout() {
+    try {
+      await signOut(auth);
+      router.push("/login");
+    } catch (error) {
+      console.error("Erro ao deslogar:", error);
+    }
+  }
+  
   return (
     <div className="flex items-center justify-center w-full h-16 px-4 bg-gray-900 text-white">
-    <h4 className="text-2xl font-bold text-amber-400 absolute left-0 pl-16">FURIA ESPORTS</h4>
+    <h4 onClick={logout} className="text-2xl font-bold text-amber-400 absolute left-0 pl-16">FURIA ESPORTS</h4>
     <Image width={100} height={100} src={furiaLogo} alt="Furia" className="absolute right-0 pr-16" />
       <NavigationMenu>
         <NavigationMenuList>
