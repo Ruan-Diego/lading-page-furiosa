@@ -6,9 +6,14 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { smoothScrollToElement } from "@/utils/smoothScroll";
+import { auth } from "@/firebase";
+import { ChatMessage } from "@/models/ChatMessage";
+import { listenToMessages, sendMessage } from "@/service/chatService";
+import { smoothScrollToElement } from "@/smoothScroll";
 import { useChat } from '@ai-sdk/react';
 import { zodResolver } from "@hookform/resolvers/zod";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
@@ -23,25 +28,40 @@ const formSchema = z.object({
 })
 
 export default function Chat() {
-    const [liquipediaData, setLiquipediaData] = useState<
-        {
-            "Time Principal:": "A escalação ativa da FURIA é: yuurih, KSCERATO, FalleN (Líder), molodoy e YEKINDAR (Stand-in). Sidde é o treinador.",
-            "Próximos Jogos:": "FURIA competirá na PGL Astana 2025 a partir de 10 de maio de 2025, IEM Dallas 2025 a partir de 19 de maio de 2025, e no BLAST.tv Austin Major 2025 a partir de 2 de junho de 2025.",
-            "Placares dos Últimos Jogos:": "Os resultados dos jogos mais recentes são: Derrota contra The MongolZ (0:2) em 9 de abril de 2025. Derrota contra Virtus.pro (0:2) em 8 de abril de 2025. Derrota contra Complexity (1:2) em 7 de abril de 2025. Vitória contra Betclic Apogee Esports (2:0) em 6 de abril de 2025. Derrota contra M80 (1:2) em 22 de março de 2025 Derrota contra Natus Vincere (0:2) em 20 de março de 2025. Derrota contra Team Falcons (1:2) em 10 de março de 2025. Vitória contra MIBR (2:1) em 9 de março de 2025. Derrota contra Team Liquid (0:2) em 8 de março de 2025. Derrota contra MOUZ (1:2) em 7 de março de 2025.",
-            "Situação do Campeonato:": "A FURIA participou recentemente da PGL Bucharest 2025, ESL Pro League Season 21: Stage 2 e BLAST Open Spring 2025."
-        }
-    >();
+    const router = useRouter();
+    const [liquipediaData, setLiquipediaData] = useState<Record<string, string>>({});
+    const [messagesOnline, setMessagesOnline] = useState<ChatMessage[]>([]);
 
     useEffect(() => {
-        getDataFromLiquipedia();
-    }, []);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            router.push("/login");
+        }
+        });
+    
+        return () => unsubscribe();
+    }, [router]);
 
-    function getDataFromLiquipedia() {
+    useEffect(() => {
+        const unsubscribe = listenToMessages(setMessagesOnline);
+        return () => unsubscribe();
+      }, []);
+    
+      async function handleSubmitChatOnline(data: z.infer<typeof formSchema>) {
+        if(auth.currentUser){
+            await sendMessage(data.message, auth.currentUser);
+        } else {
+            router.push("/login");
+        }
+        formOnline.reset();
+      }
+
+    useEffect(() => {
         fetch('https://ruandgn.app.n8n.cloud/webhook-test/dados')
-            .then(res => res.json())
-            .then(data => { data["Camisas"] = 'https://www.furia.gg'; setLiquipediaData(data) })
-            .catch(err => console.error(err))
-    }
+        .then(res => res.json())
+        .then(data => { data["Camisas"] = 'https://www.furia.gg'; setLiquipediaData(data) })
+        .catch(err => console.error(err))
+    }, []);
 
     const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +71,14 @@ export default function Chat() {
             message: "",
         },
     })
+
+    const formOnline = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            message: "",
+        },
+    })
+
     const { messages, setMessages, input, handleInputChange, handleSubmit } = useChat({
         api: '/api/chat',
         sendExtraMessageFields: false,
@@ -61,6 +89,12 @@ export default function Chat() {
             smoothScrollToElement(bottomRef.current, 1500);
         }
     }, [messages]);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            smoothScrollToElement(bottomRef.current, 1500);
+        }
+    }, [messagesOnline]);
 
     function handleInfoTeam(item: string) {
         if (!liquipediaData) return;
@@ -95,24 +129,49 @@ export default function Chat() {
                         </TabsList>
                         <TabsContent value="chatOnline">
                             <ScrollArea className="h-160">
-
+                            <div className="flex flex-col bg-gray-800 p-4 rounded-lg">
+                                    {messagesOnline.map((msg) => (
+                                        <div
+                                            key={msg.id}
+                                            className={`p-3 my-1 rounded-lg 
+                                            ${msg.user.uid !== auth.currentUser?.uid ? 'bg-gray-900 mr-8' : 'bg-amber-400 text-black ml-8'}`}
+                                        >
+                                            <div className="flex  gap-2">
+                                                <Avatar>
+                                                    <AvatarFallback>{msg.user?.name?.split(" ").map((n) => n[0])
+                                                                    .join("")
+                                                                    .slice(0, 2)
+                                                                    .toUpperCase() || 'DF'}
+                                                    </AvatarFallback>
+                                                    {msg.user.uid !== auth.currentUser?.uid ? (<AvatarImage src="" />) : (
+                                                        <AvatarImage src="" />)}
+                                                        
+                                                </Avatar>
+                                                <div className="prose dark:prose-invert prose-sm text-sm break-all">
+                                                    {msg.content}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div ref={bottomRef} className="scroll-smooth" />
+                                </div>
                             </ScrollArea>
-                            <Form {...form}>
-                                <form className='flex flex-col gap-2 p-4 border-t border-gray-700' onSubmit={handleSubmit}>
+                            <Form {...formOnline}>
+                                <form className='flex flex-col gap-2 p-4 border-t border-gray-700' onSubmit={formOnline.handleSubmit(handleSubmitChatOnline)}>
                                     <div className="flex gap-2">
                                         <FormField
-                                            control={form.control}
+                                            control={formOnline.control}
                                             name="message"
                                             render={({ field }) => (
                                                 <FormItem className='w-full'>
                                                     <FormControl>
-                                                        <Input {...field} placeholder="Interaja com os mais furiosos da internet" value={input} onChange={handleInputChange} />
+                                                        <Input {...field} placeholder="Interaja com os mais furiosos da internet"/>
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
-                                        <Button className='bg-amber-400 hover:bg-amber-500 text-black' type="submit">Enviar</Button>
+                                        <Button className='bg-amber-400 hover:bg-amber-500 text-black' type="submit">Enviaaar</Button>
                                     </div>
                                 </form>
                             </Form>

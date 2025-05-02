@@ -46,7 +46,7 @@ export default function Login() {
     async function onSubmit(data: z.infer<typeof formSchema>) {
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
-                router.push("/");
+                router.push("/chat");
             })
             .catch((error) => {
                 if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
@@ -63,7 +63,7 @@ export default function Login() {
             updateProfile(auth.currentUser!, {
                 displayName: data.nome
             }).then(() => {
-                router.push("/");
+                router.push("/chat");
             })
 
         })
@@ -92,16 +92,16 @@ export default function Login() {
             <h1 className="text-4xl font-bold mb-4 text-white">Seja bem-vindo <span className="text-amber-500 italic">furioso</span></h1>
 
 
-            <Card className={`w-96 h-fit relative ease duration-500 bg-gray-800 border-none text-white rounded-2xl shadow-lg shadow-black/30
-                            ${showRegister ? " h-fit" : "h-102"}`}>
+            <Card className={`w-96 h-fit relative ease transition-all duration-500 bg-gray-800 border-none text-white rounded-2xl shadow-lg shadow-black/30
+                            ${showRegister ? "h-fit" : "h-102"}`}>
 
                 <div
-                    className={`absolute inset-0 p-6 flex flex-col justify-between transition-all duration-500 ease-in-out gap-2
+                    className={`absolute inset-0 py-6 px-5 flex flex-col justify-between transition-all duration-500 ease-in-out gap-2
                                 ${showRegister ? "opacity-0 pointer-events-none" : "opacity-100"}`}
                 >
                     <CardHeader>
                         <CardTitle className="text-lg font-bold text-center">Login</CardTitle>
-                        <p className="text-gray-300 text-sm mb-4 text-center">Insira seus dados para criar uma nova conta</p>
+                        <p className="text-gray-300 text-sm text-center">Insira seus dados para entrar no <i className="font-bold">Chat Furioso!</i></p>
 
                     </CardHeader>
                     <CardContent className="flex flex-col">
