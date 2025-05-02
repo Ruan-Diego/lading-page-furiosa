@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./lading-page
+    working-directory: ./chat-furioso
 
 permissions:
   contents: read
