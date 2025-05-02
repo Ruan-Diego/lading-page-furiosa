@@ -7,3 +7,9 @@
 body {
  -webkit-font-smoothing: atialiased
 }
+
+input:-webkit-autofill {
+  transition: background-color 9999s ease-in-out 0s;
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: gray-500 inset;
+}

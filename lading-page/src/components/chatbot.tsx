@@ -1,7 +1,7 @@
 'use client'
 
 import { TeamData } from '@/models/TeamData';
-import { smoothScrollToElement } from '@/utils/smoothScroll';
+import { smoothScrollToElement } from '@/smoothScroll';
 import { useChat } from '@ai-sdk/react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import 'highlight.js/styles/vs2015.css';

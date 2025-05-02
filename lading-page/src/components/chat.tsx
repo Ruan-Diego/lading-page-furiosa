@@ -1,6 +1,5 @@
 import { normalizeText } from "@/utils/nomalizeText";
 import { useState } from "react";
-import { TeamData } from "../models/TeamData";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
