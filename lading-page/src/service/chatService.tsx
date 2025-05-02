@@ -1,5 +1,6 @@
 import { db } from "@/firebase";
 import { ChatMessage } from "@/models/ChatMessage";
+import { MessagePronta } from "@/models/MessagePronta";
 import { User } from "firebase/auth";
 import { addDoc, collection, getDocs, onSnapshot, orderBy, query, Timestamp } from "firebase/firestore";
 
@@ -34,4 +35,22 @@ export async function getAllMessages(): Promise<ChatMessage[]> {
     id: doc.id,
     ...(doc.data() as Omit<ChatMessage, "id">),
   }));
+
+
+}
+
+export async function getMensagensProntas() {
+  const mensagensRef = collection(db, "messagesReady");
+  const snapshot = await getDocs(mensagensRef);
+
+  const mensagens: MessagePronta[] = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    jogadoresprincipais: doc.data().jogadoresprincipais,
+    placaresultimosjogos: doc.data().placaresultimosjogos,
+    proximosjogos: doc.data().proximosjogos,
+    situacaocampeonato: doc.data().situacaocampeonato,
+    createdAt: doc.data().createdAt
+  }));
+
+  return mensagens;
 }

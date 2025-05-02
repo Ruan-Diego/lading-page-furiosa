@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { auth } from "@/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -88,7 +89,7 @@ export default function Login() {
 
     return (
         <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-            <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="Logo" className="w-24 h-24 mb-4" />
+            <Image width={96} height={96} src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="Logo" className=" mb-4" />
             <h1 className="text-4xl font-bold mb-4 text-white">Seja bem-vindo <span className="text-amber-500 italic">furioso</span></h1>
 
 

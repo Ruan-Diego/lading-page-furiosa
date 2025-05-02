@@ -8,11 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/firebase";
 import { ChatMessage } from "@/models/ChatMessage";
-import { listenToMessages, sendMessage } from "@/service/chatService";
+import { getMensagensProntas, listenToMessages, sendMessage } from "@/service/chatService";
 import { smoothScrollToElement } from "@/smoothScroll";
+import { normalizeText } from "@/utils/nomalizeText";
 import { useChat } from '@ai-sdk/react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { onAuthStateChanged } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -109,24 +111,56 @@ export default function Chat() {
     }
     
 
-    function handleInfoTeam(item: string) {
-        if (!liquipediaData) return;
+    async function handleInfoTeam(item: string) {
+        console.log(liquipediaData)
+        if (!liquipediaData || Object.keys(liquipediaData).length === 0) {
+            
+            await getMensagensProntas().then((mensagensProntas) => {
+                const normalizedItem = normalizeText(item);
+                const primeiraMensagem = mensagensProntas[0];
+                const respostaRaw = primeiraMensagem[normalizedItem];
 
-        const data = liquipediaData;
-        const resposta = data?.[item];
-        setMessages([
-            ...messages,
-            {
-                id: crypto.randomUUID(),
-                content: 'Me fale sobre ' + item,
-                role: 'user',
-            },
-            {
-                id: crypto.randomUUID(),
-                content: resposta || 'Ainda estou pesquisando mais sobre isso, você me daria alguns segundos?',
-                role: 'assistant',
-            },
-        ]);
+                // Se for Timestamp, ignora ou converte
+                const resposta = respostaRaw instanceof Timestamp
+                  ? respostaRaw.toDate().toISOString()
+                  : respostaRaw;
+                
+                setMessages([
+                    ...messages,
+                    {
+                        id: crypto.randomUUID(),
+                        content: 'Me fale sobre ' + item,
+                        role: 'user',
+                    },
+                    {
+                        id: crypto.randomUUID(),
+                        content: resposta || 'Ainda estou pesquisando mais sobre isso, você me daria alguns segundos?',
+                        role: 'assistant',
+                    },
+                ]);
+            });
+            
+
+        
+        
+
+        } else{
+            const data = liquipediaData;
+            const resposta = data?.[item];
+            setMessages([
+                ...messages,
+                {
+                    id: crypto.randomUUID(),
+                    content: 'Me fale sobre ' + item,
+                    role: 'user',
+                },
+                {
+                    id: crypto.randomUUID(),
+                    content: resposta || 'Ainda estou pesquisando mais sobre isso, você me daria alguns segundos?',
+                    role: 'assistant',
+                },
+            ]);
+        }        
     }
 
     return (
