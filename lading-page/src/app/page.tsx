@@ -1,5 +1,4 @@
 'use client'
-import { ChatBot } from "@/components/chatbot";
 import Header from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/firebase";
@@ -82,7 +81,6 @@ export default function Home() {
         </Card>
       </main>
 
-      <ChatBot />
     </div>
     </div>
   );
