@@ -57,9 +57,9 @@ export default function Chat() {
       }
 
     useEffect(() => {
-        fetch('https://ruandgn.app.n8n.cloud/webhook-test/dados')
+        fetch('https://ruandgn.app.n8n.cloud/webhook/dados')
         .then(res => res.json())
-        .then(data => { data["Camisas"] = 'https://www.furia.gg'; setLiquipediaData(data) })
+        .then(data => { data["Camisas"] = 'https://www.furia.gg'; setLiquipediaData(data);  })
         .catch(err => console.error(err))
     }, []);
 
@@ -96,6 +96,19 @@ export default function Chat() {
         }
     }, [messagesOnline]);
 
+    function addFirstMessage() {
+        if (messages.length === 0) {
+            setMessages([
+                {
+                    id: '1',
+                    content: 'Olá no que eu posso te ajudar furioso(a)?',
+                    role: 'assistant'
+                }
+            ]);
+        }
+    }
+    
+
     function handleInfoTeam(item: string) {
         if (!liquipediaData) return;
 
@@ -110,7 +123,7 @@ export default function Chat() {
             },
             {
                 id: crypto.randomUUID(),
-                content: resposta || 'Desculpe, não encontrei informações sobre isso.',
+                content: resposta || 'Ainda estou pesquisando mais sobre isso, você me daria alguns segundos?',
                 role: 'assistant',
             },
         ]);
@@ -125,7 +138,7 @@ export default function Chat() {
                     <Tabs >
                         <TabsList className="w-full text-white">
                             <TabsTrigger value="chatOnline">Chat online</TabsTrigger>
-                            <TabsTrigger value="chatBot">Assistente furioso</TabsTrigger>
+                            <TabsTrigger value="chatBot" onClick={addFirstMessage}>Assistente furioso</TabsTrigger>
                         </TabsList>
                         <TabsContent value="chatOnline">
                             <ScrollArea className="h-160">
