@@ -1,7 +1,7 @@
 {
   "name": "lading-page",
   "version": "0.1.0",
-  "homepage": "https://Ruan-Diego.github.io/chat-furioso",
+  "homepage": "https://Ruan-Diego.github.io/lading-page-furiosa",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
