@@ -89,7 +89,7 @@ export default function Login() {
 
     return (
         <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-            <Image src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="Logo" className="w-24 h-24 mb-4" />
+            <Image width={96} height={96} src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="Logo" className=" mb-4" />
             <h1 className="text-4xl font-bold mb-4 text-white">Seja bem-vindo <span className="text-amber-500 italic">furioso</span></h1>
 
 
