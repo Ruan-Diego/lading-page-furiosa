@@ -2,38 +2,23 @@
 import Header from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const logout = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/login");
-      } else {
-        setLoading(false);
       }
     });
 
     return () => logout();
   }, [router]);
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  async function logout() {
-    try {
-      await signOut(auth);
-      router.push("/login");
-    } catch (error) {
-      console.error("Erro ao deslogar:", error);
-    }
-  }
   
   return (
     <div className="bg-gray-900 w-full h-screen">

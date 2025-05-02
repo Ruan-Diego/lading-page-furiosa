@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FURIA Fan Hub 🐆🔥
 
-## Getting Started
+Uma plataforma interativa desenvolvida para fãs da FURIA Esports, com foco no time de CS2. O projeto oferece funcionalidades em tempo real, integração com inteligência artificial e dados atualizados automaticamente sobre os jogadores, partidas e campeonatos.
 
-First, run the development server:
+## 🚀 Funcionalidades
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 💬 Chat Online em Tempo Real
+- Converse com outros usuários logados na plataforma em tempo real.
+- Mensagens instantâneas, com distinção visual entre remetentes.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🤖 Bot de Informações sobre a FURIA
+- Chat pronto com um bot que responde com informações atualizadas sobre o time de CS da FURIA.
+- Os dados são coletados automaticamente do site da [Liquipedia](https://liquipedia.net/) através de um fluxo criado no **n8n**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🧠 Integração com ChatGPT
+- Um chatbot alimentado por inteligência artificial.
+- Permite aos usuários fazer perguntas livres e obter respostas inteligentes em tempo real.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🔐 Autenticação de Usuário
+- Login com e-mail e senha usando **Firebase Authentication**.
+- Criação e gerenciamento de contas de forma segura e simples.
 
-## Learn More
+### 🖥️ Landing Page
+- Página inicial com informações gerais sobre o time de CS da FURIA.
+- Design responsivo e atrativo, com chamadas para ação direcionando ao chat.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tecnologias Utilizadas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **React com TypeScript** – Interface moderna, tipada e escalável.
+- **Next.js** – Renderização SSR/SSG e otimização de performance.
+- **Firebase**:
+  - **Authentication** para login/registro de usuários.
+  - **Firestore** para armazenamento em tempo real das mensagens do chat.
+- **n8n** – Automação de coleta de dados da Liquipedia e estruturação para uso no bot da FURIA.
+- **OpenAI / ChatGPT API** – Integração com modelo de IA para respostas dinâmicas.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📸 Prévia (opcional)
+> *(Adicione prints ou GIFs aqui mostrando o chat, bot e integração com o ChatGPT)*
+
+---
+
+## 📈 Futuras melhorias
+
+- Reações e enquetes durante partidas
+- Denúncia e reações em cada mensagem
+- Notificações push em tempo real
+
+---
+
+## 🧑‍💻 Desenvolvido por
+
+**Ruan**, Engenheiro de software, desenvolvedor fullstack e fã da FURIA.
