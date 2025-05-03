@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+
+
+
+@config "../../tailwind.config.js"
+
 * {
   box-sizing: border-box;
 }
